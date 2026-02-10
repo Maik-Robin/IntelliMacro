@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using IntelliMacro.Runtime;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace IntelliMacro.CoreCommands
 {
@@ -16,7 +15,7 @@ namespace IntelliMacro.CoreCommands
         {
             get
             {
-                return new ParameterDescription[] { 
+                return new ParameterDescription[] {
                     new ParameterDescription(false, "inputString")
                 };
             }
@@ -110,7 +109,7 @@ namespace IntelliMacro.CoreCommands
         {
             get
             {
-                return new ParameterDescription[] { 
+                return new ParameterDescription[] {
                     new ParameterDescription(false, "inputString"),
                     new ParameterDescription(false, "search"),
                     new ParameterDescription(true, "replace"),
@@ -180,7 +179,7 @@ namespace IntelliMacro.CoreCommands
         {
             get
             {
-                return new ParameterDescription[] { 
+                return new ParameterDescription[] {
                     new ParameterDescription(false, "items"),
                     new ParameterDescription(false, "joiner"),
                 };
@@ -244,7 +243,7 @@ namespace IntelliMacro.CoreCommands
         {
             get
             {
-                return new ParameterDescription[] { 
+                return new ParameterDescription[] {
                     new ParameterDescription(false, "input"),
                     new ParameterDescription(false, "separator"),
                     new ParameterDescription(true, "regex"),
@@ -414,11 +413,11 @@ namespace IntelliMacro.CoreCommands
             {
                 case "=":
                     MemoryStream ms1 = new MemoryStream();
-                    new BinaryFormatter().Serialize(ms1, parameters[1]);
+                    MacroObjectSerializer.Serialize(ms1, parameters[1]);
                     return Encoding.GetEncoding("ISO-8859-1").GetString(ms1.ToArray());
                 case "=b":
                     MemoryStream ms2 = new MemoryStream();
-                    new BinaryFormatter().Serialize(ms2, parameters[1]);
+                    MacroObjectSerializer.Serialize(ms2, parameters[1]);
                     return Convert.ToBase64String(ms2.ToArray());
                 case ":":
                     return content.ToObjectNotation(false);
@@ -427,10 +426,10 @@ namespace IntelliMacro.CoreCommands
                     return content.ToObjectNotation(true);
                 case "-=":
                     MemoryStream ms3 = new MemoryStream(Encoding.GetEncoding("ISO-8859-1").GetBytes(content.String));
-                    return (MacroObject)new BinaryFormatter().Deserialize(ms3);
+                    return (MacroObject)MacroObjectSerializer.Deserialize(ms3);
                 case "-=b":
                     MemoryStream ms4 = new MemoryStream(Convert.FromBase64String(content.String));
-                    return (MacroObject)new BinaryFormatter().Deserialize(ms4);
+                    return (MacroObject)MacroObjectSerializer.Deserialize(ms4);
                 case "-":
                 case "-:":
                 case "-::":

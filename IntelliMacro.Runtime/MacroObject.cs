@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
 namespace IntelliMacro.Runtime
@@ -125,7 +124,7 @@ namespace IntelliMacro.Runtime
                         throw new MacroErrorException("Object Notation cannot be parsed: Wrapped object not serializable.");
                     MemoryStream ms = new MemoryStream(Convert.FromBase64String(expression.Substring(start1, pos - start1)));
                     pos++;
-                    return new MacroWrappedObject(new BinaryFormatter().Deserialize(ms));
+                    return new MacroWrappedObject(MacroObjectSerializer.Deserialize(ms));
                 default: // number
                     int start2 = pos;
                     ScanForward(expression, "-0123456789", true, ref pos);
@@ -726,8 +725,8 @@ namespace IntelliMacro.Runtime
             try
             {
                 MemoryStream ms = new MemoryStream();
-                new BinaryFormatter().Serialize(ms, wrapped);
-                base64Data = Convert.ToBase64String(ms.GetBuffer());
+                MacroObjectSerializer.Serialize(ms, wrapped);
+                base64Data = Convert.ToBase64String(ms.GetBuffer(), 0, (int)ms.Length);
             }
             catch
             {

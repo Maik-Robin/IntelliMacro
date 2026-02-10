@@ -7,8 +7,6 @@ using System.Reflection;
 using System.Text;
 using IntelliMacro.Runtime;
 using IntelliMacro.Runtime.Paths;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace IntelliMacro.CoreCommands
 {
@@ -338,9 +336,9 @@ namespace IntelliMacro.CoreCommands
             byte[] content;
             if (parameters[2] != null && parameters[2].String == "=")
             {
-                MemoryStream ms = new MemoryStream();
-                new BinaryFormatter().Serialize(ms, parameters[1]);
-                content = ms.ToArray();
+                MemoryStream ms1 = new MemoryStream();
+                MacroObjectSerializer.Serialize(ms1, parameters[1]);
+                content = ms1.ToArray();
             }
             else if (parameters[2] != null && parameters[2].String == ":")
             {
@@ -450,7 +448,7 @@ namespace IntelliMacro.CoreCommands
                         if (parameters[1].IsNumber)
                             encoding = Encoding.GetEncoding((int)parameters[1].Number);
                         else if (parameters[1].String == "=")
-                            return (MacroObject)new BinaryFormatter().Deserialize(fileStream);
+                            return (MacroObject)MacroObjectSerializer.Deserialize(fileStream);
                         else if (parameters[1].String == ":" || parameters[1].String == "::")
                             return MacroObject.FromObjectNotation(new StreamReader(fileStream, Encoding.ASCII).ReadToEnd());
                         else
