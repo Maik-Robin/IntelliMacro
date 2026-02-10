@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelliMacro.Runtime", "Int
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelliMacro.Core", "IntelliMacro.Core\IntelliMacro.Core.csproj", "{A1FFC677-C0CC-413D-ACB3-D74161087A16}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntelliMacro.CoreCommands", "IntelliMacro.CoreCommands\IntelliMacro.CoreCommands.csproj", "{3212F3A6-E226-4AB7-B3B4-47576B12A312}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{A1FFC677-C0CC-413D-ACB3-D74161087A16}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1FFC677-C0CC-413D-ACB3-D74161087A16}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1FFC677-C0CC-413D-ACB3-D74161087A16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3212F3A6-E226-4AB7-B3B4-47576B12A312}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3212F3A6-E226-4AB7-B3B4-47576B12A312}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3212F3A6-E226-4AB7-B3B4-47576B12A312}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3212F3A6-E226-4AB7-B3B4-47576B12A312}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

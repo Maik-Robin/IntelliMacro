@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.Json;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
 namespace IntelliMacro.Runtime
@@ -113,63 +113,19 @@ namespace IntelliMacro.Runtime
                     return sb.ToString();
                 case ':': // wrapped object (:Object:type:base64:)
                     pos++;
-                    // read the "Object" token (typically "Object")
-                    int startToken = pos;
                     ScanForward(expression, ":", false, ref pos);
-                    string token = expression.Substring(startToken, pos - startToken);
                     pos++;
-                    // read the type token (we store AssemblyQualifiedName when serializing)
-                    int startType = pos;
                     ScanForward(expression, ":", false, ref pos);
-                    string typeToken = expression.Substring(startType, pos - startType);
                     pos++;
-                    // read the base64 data
-                    int startData = pos;
+                    int start1 = pos;
                     ScanForward(expression, ":", false, ref pos);
-                    string data = expression.Substring(startData, pos - startData);
-                    if (pos == startData)
+                    if (pos == start1)
                         return new MacroWrappedObject(null);
-                    else if (data == "?")
+                    else if (expression.Substring(start1, pos - start1) == "?")
                         throw new MacroErrorException("Object Notation cannot be parsed: Wrapped object not serializable.");
-                    try
-                    {
-                        byte[] bytes = Convert.FromBase64String(data);
-                        string json = Encoding.UTF8.GetString(bytes);
-                        System.Type t = null;
-                        if (!string.IsNullOrEmpty(typeToken))
-                        {
-                            t = System.Type.GetType(typeToken);
-                            if (t == null)
-                            {
-                                // Try to find by short name in loaded assemblies as a fallback
-                                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-                                {
-                                    t = asm.GetType(typeToken) ?? asm.GetType(typeToken.Split(',')[0].Trim());
-                                    if (t != null) break;
-                                }
-                            }
-                        }
-                        object obj;
-                        if (t != null)
-                        {
-                            obj = JsonSerializer.Deserialize(json, t, new JsonSerializerOptions { IncludeFields = true });
-                        }
-                        else
-                        {
-                            // If we don't know the type, try to deserialize to JsonDocument
-                            obj = JsonSerializer.Deserialize<JsonDocument>(json);
-                        }
-                        pos++;
-                        return new MacroWrappedObject(obj);
-                    }
-                    catch (FormatException)
-                    {
-                        throw new MacroErrorException("Object Notation cannot be parsed: Invalid base64 data in wrapped object.");
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new MacroErrorException("Object Notation cannot be parsed: " + ex.Message);
-                    }
+                    MemoryStream ms = new MemoryStream(Convert.FromBase64String(expression.Substring(start1, pos - start1)));
+                    pos++;
+                    return new MacroWrappedObject(new BinaryFormatter().Deserialize(ms));
                 default: // number
                     int start2 = pos;
                     ScanForward(expression, "-0123456789", true, ref pos);
@@ -769,17 +725,15 @@ namespace IntelliMacro.Runtime
             string base64Data;
             try
             {
-                var options = new JsonSerializerOptions { IncludeFields = true };
-                string json = JsonSerializer.Serialize(wrapped, wrapped.GetType(), options);
-                byte[] bytes = Encoding.UTF8.GetBytes(json);
-                base64Data = Convert.ToBase64String(bytes);
+                MemoryStream ms = new MemoryStream();
+                new BinaryFormatter().Serialize(ms, wrapped);
+                base64Data = Convert.ToBase64String(ms.GetBuffer());
             }
             catch
             {
                 base64Data = "?";
             }
-            string typeName = wrapped.GetType().AssemblyQualifiedName ?? wrapped.GetType().FullName;
-            return ":Object:" + typeName + ":" + base64Data + ":";
+            return ":Object:" + wrapped.GetType().Name + ":" + base64Data + ":";
         }
     }
 }

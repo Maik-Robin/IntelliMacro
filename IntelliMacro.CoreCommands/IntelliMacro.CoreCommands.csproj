@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IntelliMacro.Core\IntelliMacro.Core.csproj" />
+    <ProjectReference Include="..\IntelliMacro.Runtime\IntelliMacro.Runtime.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ManagedWinapi">
+      <HintPath>..\IntelliMacro.Runtime\lib\ManagedWinapi.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>
